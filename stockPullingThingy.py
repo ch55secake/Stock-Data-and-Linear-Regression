@@ -1,21 +1,39 @@
 import time
 import pandas as pd
-from pandas_datareader import data
-import json
 import requests
 
-url = "https://alpha-vantage.p.rapidapi.com/query"
 
-querystring = {"from_currency": "BTC", "function": "CURRENCY_EXCHANGE_RATE", "to_currency": "USD"}
+def isSupport(df, i):
+    support = df['Low'][i] < df['Low'][i - 1] and df['Low'][i] < df['Low'][i + 1] and df['Low'][i + 1] < df['Low'][
+        i + 2] and df['Low'][i - 1] < df['Low'][i - 2]
+    return support
 
-headers = {
-    "X-RapidAPI-Host": "alpha-vantage.p.rapidapi.com",
-    "X-RapidAPI-Key": "6d48558338msh973a547daf7f4c8p1c460fjsn34222e738ef3"
-}
 
-response = requests.request("GET", url, headers=headers, params=querystring)
+def isResistance(df, i):
+    resistance = df['High'][i] > df['High'][i - 1] and df['High'][i] > df['High'][i + 1] and df['High'][i + 1] > \
+                 df['High'][i + 2] and df['High'][i - 1] > df['High'][i - 2]
+    return resistance
 
-print(response.text)
+
+def collectAllWithKey(key, tSeries):
+    out = []
+    for v in tSeries.values():
+        out.append(v[key])
+    return out
+
+
+# url = "https://alpha-vantage.p.rapidapi.com/query"
+#
+# querystring = {"from_currency": "BTC", "function": "CURRENCY_EXCHANGE_RATE", "to_currency": "USD"}
+#
+# headers = {
+#     "X-RapidAPI-Host": "alpha-vantage.p.rapidapi.com",
+#     "X-RapidAPI-Key": "6d48558338msh973a547daf7f4c8p1c460fjsn34222e738ef3"
+# }
+#
+# response = requests.request("GET", url, headers=headers, params=querystring)
+#
+# print(response.text)
 
 url = "https://alpha-vantage.p.rapidapi.com/query"
 
@@ -52,45 +70,15 @@ headers = {
     "X-RapidAPI-Key": "6d48558338msh973a547daf7f4c8p1c460fjsn34222e738ef3"
 }
 
-
-def collectAllWithKey(key, tSeries):
-    out = []
-    for v in tSeries.values():
-        out.append(v[key])
-    return out
-
-
 intraday = requests.request("GET", url, headers=headers, params=querystring)
 newIntraday = intraday.json()
 print(newIntraday["Time Series Crypto (5min)"])
 high = collectAllWithKey("2. high", newIntraday["Time Series Crypto (5min)"])
 low = collectAllWithKey("3. low", newIntraday["Time Series Crypto (5min)"])
-for v in low:
-    print(v)
+df = pd.DataFrame({
+    "High": high,
+    "Low": low
+})
 
-
-def convertingDataToFrame():
-    df = pd.read_json(newIntraday.json)
-    print(df["high"].appply(pd.Series))
-    pd.json_normalize(df)
-
-# def formattingData(dataFrameSDAFADJ, dataFrameSDA):
-# print(dataFrameSDA)
-
-
-# def fetchingData():
-#  tickers = ["BTC-USD"]
-#  stockDataForAdjClose = data.get_data_yahoo(tickers)
-#  stockDataActual = data.get_quote_yahoo(tickers)
-# dataFrameSDA = pd.DataFrame(stockDataActual)
-# print(stockDataActual)
-# dataFrameSDA.to_csv(index=False)
-# dataFrameSDAFADJ = pd.DataFrame(stockDataForAdjClose["Adj Close"])
-#  print(dataFrameSDAFADJ)
-# dataFrameSDAFADJ = dataFrameSDAFADJ.to_csv(index=False)
-
-
-# class stockData:
-# formattingData(dataFrameSDA=True, dataFrameSDAFADJ=True)
-# fetchingData()
-# pass
+for i in range(2, len(df)):
+    print(f"Row {i}: {df['High'][i]} {df['Low'][i]} Is Support: {isSupport(df, i)} Is Resistant: {isResistance(df, i)}")
