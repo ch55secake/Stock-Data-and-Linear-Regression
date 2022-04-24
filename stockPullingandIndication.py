@@ -28,7 +28,7 @@ def collectAllWithKey(key, tSeries):
 #
 # headers = {
 #     "X-RapidAPI-Host": "alpha-vantage.p.rapidapi.com",
-#     "X-RapidAPI-Key": "6d48558338msh973a547daf7f4c8p1c460fjsn34222e738ef3"
+#     "X-RapidAPI-Key": 
 # }
 #
 # response = requests.request("GET", url, headers=headers, params=querystring)
@@ -42,7 +42,7 @@ querystring = {"time_period": "60", "interval": "5min", "series_type": "close", 
 
 headers = {
     "X-RapidAPI-Host": "alpha-vantage.p.rapidapi.com",
-    "X-RapidAPI-Key": "6d48558338msh973a547daf7f4c8p1c460fjsn34222e738ef3"
+    "X-RapidAPI-Key": 
 }
 
 response = requests.request("GET", url, headers=headers, params=querystring)
@@ -56,7 +56,7 @@ querystring = {"time_period": "60", "interval": "5min", "series_type": "close", 
 
 headers = {
     "X-RapidAPI-Host": "alpha-vantage.p.rapidapi.com",
-    "X-RapidAPI-Key": "6d48558338msh973a547daf7f4c8p1c460fjsn34222e738ef3"
+    "X-RapidAPI-Key":
 }
 
 response = requests.request("GET", url, headers=headers, params=querystring)
@@ -67,7 +67,7 @@ querystring = {"function": "CRYPTO_INTRADAY", "symbol": "BTC", "market": "GBP", 
 
 headers = {
     "X-RapidAPI-Host": "alpha-vantage.p.rapidapi.com",
-    "X-RapidAPI-Key": "6d48558338msh973a547daf7f4c8p1c460fjsn34222e738ef3"
+    "X-RapidAPI-Key": 
 }
 
 intraday = requests.request("GET", url, headers=headers, params=querystring)
