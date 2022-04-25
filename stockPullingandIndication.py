@@ -15,6 +15,16 @@ def isResistance(df, i):
     return resistance
 
 
+def checkOnRsi(df2):
+    if df2.iloc[:, 0].gt(70, 90).all():
+        print(
+            "Values of 70 or above indicate that an asset is becoming overbought and may be primed for a trend reversal or experience correction in the Bitcoin price.")
+        return True
+    elif df2.iloc[:, 0].lt(0, 35).all():
+        print("An RSI reading of 30 or below indicates an oversold or undervalued condition.")
+    return False
+
+
 def collectAllWithKey(key, tSeries):
     out = []
     for v in tSeries.values():
@@ -28,7 +38,7 @@ def collectAllWithKey(key, tSeries):
 #
 # headers = {
 #     "X-RapidAPI-Host": "alpha-vantage.p.rapidapi.com",
-#     "X-RapidAPI-Key": 
+#     "X-RapidAPI-Key": "6d48558338msh973a547daf7f4c8p1c460fjsn34222e738ef3"
 # }
 #
 # response = requests.request("GET", url, headers=headers, params=querystring)
@@ -37,26 +47,35 @@ def collectAllWithKey(key, tSeries):
 
 url = "https://alpha-vantage.p.rapidapi.com/query"
 
-querystring = {"time_period": "60", "interval": "5min", "series_type": "close", "function": "RSI", "symbol": "BTC",
+querystring = {"time_period": "60", "interval": "5min", "series_type": "close", "function": "RSI", "symbol": "BTCGBP",
                "datatype": "json"}
 
 headers = {
     "X-RapidAPI-Host": "alpha-vantage.p.rapidapi.com",
-    "X-RapidAPI-Key": 
+    "X-RapidAPI-Key": ""
 }
 
-response = requests.request("GET", url, headers=headers, params=querystring)
+RSI = requests.request("GET", url, headers=headers, params=querystring)
+newRSI = RSI.json()
+print(newRSI["Technical Analysis: RSI"])
+rsiOUT = collectAllWithKey("RSI", newRSI["Technical Analysis: RSI"])
+df2 = pd.DataFrame({
+    "RSI": rsiOUT,
+})
 
-print(response.text)
+
+for i in range(0, len(df2)):
+    df2["RSI"] = pd.to_numeric(df2["RSI"], errors='coerce').fillna(0, downcast='infer')
+    print(f"Row {i}: {df2['RSI'][i]} Check on : {checkOnRsi(df2)}")
 
 url = "https://alpha-vantage.p.rapidapi.com/query"
 
-querystring = {"time_period": "60", "interval": "5min", "series_type": "close", "function": "OBV", "symbol": "BTC",
-               "datatype": "json"}
+querystring = {"interval": "5min", "function": "MACD", "symbol": "BTCGBP",
+               "datatype": "json", "series_type": "open", "time_period": "60"}
 
 headers = {
     "X-RapidAPI-Host": "alpha-vantage.p.rapidapi.com",
-    "X-RapidAPI-Key":
+    "X-RapidAPI-Key": ""
 }
 
 response = requests.request("GET", url, headers=headers, params=querystring)
@@ -67,7 +86,7 @@ querystring = {"function": "CRYPTO_INTRADAY", "symbol": "BTC", "market": "GBP", 
 
 headers = {
     "X-RapidAPI-Host": "alpha-vantage.p.rapidapi.com",
-    "X-RapidAPI-Key": 
+    "X-RapidAPI-Key": ""
 }
 
 intraday = requests.request("GET", url, headers=headers, params=querystring)
@@ -77,7 +96,7 @@ high = collectAllWithKey("2. high", newIntraday["Time Series Crypto (5min)"])
 low = collectAllWithKey("3. low", newIntraday["Time Series Crypto (5min)"])
 df = pd.DataFrame({
     "High": high,
-    "Low": low
+    "Low": low,
 })
 
 for i in range(2, len(df)):
